@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <GWNumber>1</GWNumber>
+  <GWSetting>1</GWSetting>
+  <ServerSetting>0</ServerSetting>
+  <DelayTime>5</DelayTime>
+  <Cycle>1</Cycle>
+  <GW>
+    <GWName>kinko001</GWName>
+    <IPAddress>192.168.52.199</IPAddress>
+    <UnitNumber>2</UnitNumber>
+    <Unit>
+      <LoRaAddress>002</LoRaAddress>
+      <RS485Address>001</RS485Address>
+    </Unit>
+    <Unit>
+      <LoRaAddress>002</LoRaAddress>
+      <RS485Address>003</RS485Address>
+    </Unit>
+  </GW>
+</settings>
