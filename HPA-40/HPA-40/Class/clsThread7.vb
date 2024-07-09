@@ -17,7 +17,7 @@ Public Class clsThread7
         While Not gblStopFlagGateway
             If Not gblStopTempFlagGateway Then
                 If (gblCommStartThr7Flag = True And gblCommEndThr7Flag = False) Then
-                    Thread.Sleep(500)
+                    Thread.Sleep(100)
                     gintDbgCount7GW += 1
                     Console.WriteLine("Count in Thread7: {0}", gintDbgCount7GW)
                     Console.WriteLine("Thread7の時間データ: {0}", dtTimeTaking)

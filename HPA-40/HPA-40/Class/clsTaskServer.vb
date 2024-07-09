@@ -61,11 +61,11 @@ Public Class clsTaskServer
 
                         'CSVファイルが存在している
                         If File.Exists(strCSVFileCheck) Then
-                            'サーバCSVファイルを転送　→ステータスを戻る
-                            sttFileCSVTranfer = subUploadFileToFtp(ipAddressInfo, userNameInfo, passWordInfo, pathInfo, strCSVFileCheck)
+                            'サーバCSVファイルを転送　→ステータスに戻る
+                            sttFileCSVTranfer = funcUploadFileToFtp(ipAddressInfo, userNameInfo, passWordInfo, pathInfo, strCSVFileCheck)
 
-                            'サーバCTCファイルを転送　→ステータスを戻る
-                            sttFileCTCTranfer = subUploadFileToFtp(ipAddressInfo, userNameInfo, passWordInfo, pathInfo, strCTCFile)
+                            'サーバCTCファイルを転送　→ステータスに戻る
+                            sttFileCTCTranfer = funcUploadFileToFtp(ipAddressInfo, userNameInfo, passWordInfo, pathInfo, strCTCFile)
 
                             '転送が成功になる際ファイルの移動を実行
                             If sttFileCSVTranfer And sttFileCTCTranfer Then
@@ -90,38 +90,45 @@ Public Class clsTaskServer
 #End Region
 
 #Region "関数_サーバにファイルアップロード"
-    Private Function subUploadFileToFtp(ByVal ftpServer As String, ByVal ftpUsername As String, ByVal ftpPassword As String, ByVal newFolderName As String, ByVal localFilePath As String)
-        'ファイル名を取る
-        Dim strfileName As String = Path.GetFileName(localFilePath)
-        Dim struploadUrl As String = "ftp://" & ftpServer.TrimEnd("/") & "/" & newFolderName & "/" & strfileName
+    Private Function funcUploadFileToFtp(ByVal ftpServer As String, ByVal ftpUsername As String, ByVal ftpPassword As String, ByVal newFolderName As String, ByVal localFilePath As String) As Boolean
+        Try
+            'ファイル名を取る
+            Dim strfileName As String = Path.GetFileName(localFilePath)
+            Dim struploadUrl As String = "ftp://" & ftpServer.TrimEnd("/") & "/" & newFolderName & "/" & strfileName
 
-        'FTPリクエストを作成
-        Dim request As FtpWebRequest = DirectCast(WebRequest.Create(struploadUrl), FtpWebRequest)
-        request.Method = WebRequestMethods.Ftp.UploadFile
-        request.Credentials = New NetworkCredential(ftpUsername, ftpPassword)
+            'FTPリクエストを作成
+            Dim request As FtpWebRequest = DirectCast(WebRequest.Create(struploadUrl), FtpWebRequest)
+            request.Method = WebRequestMethods.Ftp.UploadFile
+            request.Credentials = New NetworkCredential(ftpUsername, ftpPassword)
 
-        'ファイルをロード
-        Dim fileContents() As Byte = File.ReadAllBytes(localFilePath)
-        request.ContentLength = fileContents.Length
+            'ファイルをロード
+            Dim fileContents() As Byte = File.ReadAllBytes(localFilePath)
+            request.ContentLength = fileContents.Length
 
-        'ファイルをリクエストストリームに書き込む　(転送)
-        Dim requestStream As Stream = Nothing
-        requestStream = request.GetRequestStream()
-        requestStream.Write(fileContents, 0, fileContents.Length)
-        'リソースを解放
-        If requestStream IsNot Nothing Then
-            requestStream.Dispose()
-        End If
+            ' ファイルをリクエストストリームに書き込む　(転送)
+            Using requestStream As Stream = request.GetRequestStream()
+                requestStream.Write(fileContents, 0, fileContents.Length)
+            End Using
 
-        'リスポーンを取る
-        Dim response As FtpWebResponse = Nothing
-        response = DirectCast(request.GetResponse(), FtpWebResponse)
-        Console.WriteLine("{0}をアップロードできました。ステータス: {1}", strfileName, response.StatusDescription)
-        'リソースを解放
-        If response IsNot Nothing Then
-            response.Dispose()
-        End If
-        Return response.StatusCode = FtpStatusCode.ClosingData
+            'リスポーンを取る
+            Using response As FtpWebResponse = DirectCast(request.GetResponse(), FtpWebResponse)
+                'サーバへ転送することが成功になる
+                If response.StatusDescription.Contains("226 Transfer complete") Then
+                    Console.WriteLine("{0}をアップロードできました。ステータス: {1}", strfileName, response.StatusDescription)
+                    Return True
+
+                    'サーバへ転送することが失敗になる
+                Else
+                    Console.WriteLine("{0}をアップロードできませんでした。ステータス: {1}", strfileName, response.StatusDescription)
+                    Return False
+                End If
+            End Using
+
+        Catch ex As Exception
+            ' エラーメッセージを表示する
+            Console.WriteLine("ファイルをアップロードできませんでした。エラー: {0}", ex.Message)
+            Return False
+        End Try
     End Function
 #End Region
 

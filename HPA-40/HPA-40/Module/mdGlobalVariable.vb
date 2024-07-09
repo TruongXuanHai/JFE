@@ -8,12 +8,6 @@
 ' 2024/06/17 チュオンスアンハイ
 
 Imports System.Threading.Tasks
-Imports System.Xml
-Imports System.Xml.Serialization
-Imports System.IO
-Imports System.ValueTuple
-
-
 Module mdGlobalVariable
 #Region "ディレクトリ"
     Public strbasePathGateway As String         'Gatewayフォルダ
@@ -28,7 +22,7 @@ Module mdGlobalVariable
 
 #Region "固定変数"
     Public APP_NAME_1 As String = "HPA-40"
-    Public UNITSETTING_XML_NAME As String = "Unitsetting"
+    Public UNITSETTING_XML_NAME As String = "Unitsetting1"
     Public FTPSETTING_XML_NAME As String = "Serversetting"
     Public MAINLOG_TXT_NAME As String = "MainErr"
     Public APP_NAME_2 As String = "上位サーバ転送"
@@ -97,7 +91,6 @@ Module mdGlobalVariable
     Public dtTimeTaking As String                   '取得している時間データ
     Public blFormClosing As Boolean
 #End Region
-
 
 #Region "XMLデータ定義"
     Public gwSettingInfo As Integer

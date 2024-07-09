@@ -17,7 +17,7 @@ Public Class clsThread4
         While Not gblStopFlagGateway
             If Not gblStopTempFlagGateway Then
                 If (gblCommStartThr4Flag = True And gblCommEndThr4Flag = False) Then
-                    Thread.Sleep(500)
+                    Thread.Sleep(100)
                     gintDbgCount4GW += 1
                     Console.WriteLine("Count in Thread4: {0}", gintDbgCount4GW)
                     Console.WriteLine("Thread4の時間データ: {0}", dtTimeTaking)

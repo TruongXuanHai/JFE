@@ -33,8 +33,8 @@ Public Class clsThreadProcess
 #Region "構造体"
 #Region "構造体_ソケット通信設定値"
     Dim intSktPort As Integer = 502      'ポート番号
-    Dim intSktIntval As Integer = 200    '送信間隔
-    Dim intSktTimeout As Integer = 100   'タイムアウト
+    Dim intSktIntval As Integer = 400    '送信間隔
+    Dim intSktTimeout As Integer = 200   'タイムアウト
 
 #End Region
 #Region "構造体_Modbus書込みデータ"
@@ -156,6 +156,7 @@ Public Class clsThreadProcess
             gsttWriteData.intWDataModAddr = arrModAddOfGW8(unitIndexTemp)
         End If
 
+        'ファンクションコードを設定
         gsttModbus.intModFunc = &H17
 
         'Queueから時間データ
@@ -198,12 +199,13 @@ Public Class clsThreadProcess
         'データ作成
         Dim intSndDataLen As Integer
         'レジスタ数が多きときに自動で分割する
+
         intSndDataLen = funcGetSndDatDev(gwIndexTemp, unitIndexTemp)
         If intSndDataLen = 0 Then
             Return blnRslt
             Exit Function
         End If
-
+        Thread.Sleep(500)
         '送信データをテキストボックスに書込む
         Dim strSend As String = ""
         For intCnt = 0 To (intSndDataLen - 1)
@@ -218,21 +220,19 @@ Public Class clsThreadProcess
             Return blnRslt
             Exit Function
         End If
-
         '全てのデータを得る際の現在の送信回数をカウントアップ
         gintComNowCnt += 1
         '受信確認用タイマスタート
-        gintCntTmr1Tick = 0
+        'gintCntTmr1Tick = 0
         '受信処理
         blnRslt = gobjClsTcpClient.mTcpRcv
-        Thread.Sleep(200)
-
+        Thread.Sleep(500)
         Dim intRcvStat As Integer
         'Tickが起こった回数をカウントアップ
         gintCntTmr1Tick += 1
         '受信処理
         blnRslt = gobjClsTcpClient.mTcpRcv
-        Thread.Sleep(200)
+        'Thread.Sleep(500)
         '受信状態フラグ確認
         intRcvStat = gobjClsTcpClient.pRcvStat
         If intRcvStat = RcvStat.RCV_END Then
@@ -244,6 +244,7 @@ Public Class clsThreadProcess
             '受信データを取得する
             Dim bytRcvData() As Byte
             bytRcvData = gobjClsTcpClient.pRcvData
+
             '---受信データを[RawData]タブのテキストボックスに書込む---
             Dim strRcv As String = ""
             Dim strRcv1 As String = ""
@@ -423,6 +424,7 @@ Public Class clsThreadProcess
                 If ginitLoop = False Then
                     'サーバ側との接続を切断する
                     gobjClsTcpClient.mTcpClose()
+
                 End If
             End If
         ElseIf intRcvStat = RcvStat.RCV_MID Then
@@ -436,6 +438,7 @@ Public Class clsThreadProcess
             Else
                 'タイムアウトがまだ→タイマスタート
                 funcGWProcessing(gwIndexTemp, unitIndexTemp)
+
             End If
         ElseIf intRcvStat = RcvStat.RCV_ERR Then
             '受信エラー
@@ -479,117 +482,128 @@ Public Class clsThreadProcess
         Dim strdecChannel7 As String
         Dim strdecChannel8 As String
 
-        Dim strStatusChannel1 As String = strDataFilterTemp.Substring(0, 4)
-        Dim strStatusChannel2 As String = strDataFilterTemp.Substring(36, 4)
-        Dim strStatusChannel3 As String = strDataFilterTemp.Substring(72, 4)
-        Dim strStatusChannel4 As String = strDataFilterTemp.Substring(108, 4)
-        Dim strStatusChannel5 As String = strDataFilterTemp.Substring(144, 4)
-        Dim strStatusChannel6 As String = strDataFilterTemp.Substring(180, 4)
-        Dim strStatusChannel7 As String = strDataFilterTemp.Substring(216, 4)
-        Dim strStatusChannel8 As String = strDataFilterTemp.Substring(252, 4)
-
-        'Channel1
-        'アナログ入力が不使用かどうか確認
-        If strStatusChannel1 <> "0000" Then
-            '16進数
-            strRevertData1 = strDataFilterTemp.Substring(20, 16)
-            '10進数に変更
-            decChannel1 = Math.Round(Convert.ToInt32(strRevertData1, 16) * 0.0001, 2)
-            '小数点(2桁)を取る
-            strdecChannel1 = decChannel1.ToString("F2")
-        Else
+        If strDataFilterTemp = "" Then
             strdecChannel1 = ""
-        End If
-
-        'Channel2
-        'アナログ入力が不使用かどうか確認
-        If strStatusChannel2 <> "0000" Then
-            '16進数
-            strRevertData2 = strDataFilterTemp.Substring(56, 16)
-            '10進数に変更
-            decChannel2 = Math.Round(Convert.ToInt32(strRevertData2, 16) * 0.0001, 2)
-            '小数点(2桁)を取る
-            strdecChannel2 = decChannel2.ToString("F2")
-        Else
             strdecChannel2 = ""
-        End If
-
-        'Channel3
-        'アナログ入力が不使用かどうか確認
-        If strStatusChannel3 <> "0000" Then
-            '16進数
-            strRevertData3 = strDataFilterTemp.Substring(92, 16)
-            '10進数に変更
-            decChannel3 = Math.Round(Convert.ToInt32(strRevertData3, 16) * 0.0001, 2)
-            '小数点(2桁)を取る
-            strdecChannel3 = decChannel3.ToString("F2")
-        Else
             strdecChannel3 = ""
-        End If
-
-        'Channel4
-        'アナログ入力が不使用かどうか確認
-        If strStatusChannel4 <> "0000" Then
-            '16進数
-            strRevertData4 = strDataFilterTemp.Substring(128, 16)
-            '10進数に変更
-            decChannel4 = Math.Round(Convert.ToInt32(strRevertData4, 16) * 0.0001, 2)
-            '小数点(2桁)を取る
-            strdecChannel4 = decChannel4.ToString("F2")
-        Else
             strdecChannel4 = ""
-        End If
-
-        'Channel5
-        'アナログ入力が不使用かどうか確認
-        If strStatusChannel5 <> "0000" Then
-            '16進数
-            strRevertData5 = strDataFilterTemp.Substring(164, 16)
-            '10進数に変更
-            decChannel5 = Math.Round(Convert.ToInt32(strRevertData5, 16) * 0.0001, 2)
-            '小数点(2桁)を取る
-            strdecChannel5 = decChannel5.ToString("F2")
-        Else
             strdecChannel5 = ""
-        End If
-
-        'Channel6
-        'アナログ入力が不使用かどうか確認
-        If strStatusChannel6 <> "0000" Then
-            '16進数
-            strRevertData6 = strDataFilterTemp.Substring(200, 16)
-            '10進数に変更
-            decChannel6 = Math.Round(Convert.ToInt32(strRevertData6, 16) * 0.0001, 2)
-            '小数点(2桁)を取る
-            strdecChannel6 = decChannel6.ToString("F2")
-        Else
             strdecChannel6 = ""
-        End If
-
-        'Channel7
-        'アナログ入力が不使用かどうか確認
-        If strStatusChannel7 <> "0000" Then
-            '16進数
-            strRevertData7 = strDataFilterTemp.Substring(236, 16)
-            '10進数に変更
-            decChannel7 = Math.Round(Convert.ToInt32(strRevertData7, 16) * 0.0001, 2)
-            '小数点(2桁)を取る
-            strdecChannel7 = decChannel7.ToString("F2")
-        Else
             strdecChannel7 = ""
-        End If
-
-        'Channel8
-        'アナログ入力が不使用かどうか確認
-        If strStatusChannel8 <> "0000" Then
-            '16進数
-            strRevertData8 = strDataFilterTemp.Substring(272, 16)
-            '10進数に変更
-            decChannel8 = Math.Round(Convert.ToInt32(strRevertData8, 16) * 0.0001, 2)
-            '小数点(2桁)を取る
-            strdecChannel8 = decChannel8.ToString("F2")
-        Else
             strdecChannel8 = ""
+        Else
+            Dim strStatusChannel1 As String = strDataFilterTemp.Substring(0, 4)
+            Dim strStatusChannel2 As String = strDataFilterTemp.Substring(36, 4)
+            Dim strStatusChannel3 As String = strDataFilterTemp.Substring(72, 4)
+            Dim strStatusChannel4 As String = strDataFilterTemp.Substring(108, 4)
+            Dim strStatusChannel5 As String = strDataFilterTemp.Substring(144, 4)
+            Dim strStatusChannel6 As String = strDataFilterTemp.Substring(180, 4)
+            Dim strStatusChannel7 As String = strDataFilterTemp.Substring(216, 4)
+            Dim strStatusChannel8 As String = strDataFilterTemp.Substring(252, 4)
+
+            'Channel1
+            'アナログ入力が不使用かどうか確認
+            If strStatusChannel1 <> "0000" Then
+                '16進数
+                strRevertData1 = strDataFilterTemp.Substring(20, 16)
+                '10進数に変更
+                decChannel1 = Math.Round(Convert.ToInt32(strRevertData1, 16) * 0.0001, 2)
+                '小数点(2桁)を取る
+                strdecChannel1 = decChannel1.ToString("F2")
+            Else
+                strdecChannel1 = ""
+            End If
+
+            'Channel2
+            'アナログ入力が不使用かどうか確認
+            If strStatusChannel2 <> "0000" Then
+                '16進数
+                strRevertData2 = strDataFilterTemp.Substring(56, 16)
+                '10進数に変更
+                decChannel2 = Math.Round(Convert.ToInt32(strRevertData2, 16) * 0.0001, 2)
+                '小数点(2桁)を取る
+                strdecChannel2 = decChannel2.ToString("F2")
+            Else
+                strdecChannel2 = ""
+            End If
+
+            'Channel3
+            'アナログ入力が不使用かどうか確認
+            If strStatusChannel3 <> "0000" Then
+                '16進数
+                strRevertData3 = strDataFilterTemp.Substring(92, 16)
+                '10進数に変更
+                decChannel3 = Math.Round(Convert.ToInt32(strRevertData3, 16) * 0.0001, 2)
+                '小数点(2桁)を取る
+                strdecChannel3 = decChannel3.ToString("F2")
+            Else
+                strdecChannel3 = ""
+            End If
+
+            'Channel4
+            'アナログ入力が不使用かどうか確認
+            If strStatusChannel4 <> "0000" Then
+                '16進数
+                strRevertData4 = strDataFilterTemp.Substring(128, 16)
+                '10進数に変更
+                decChannel4 = Math.Round(Convert.ToInt32(strRevertData4, 16) * 0.0001, 2)
+                '小数点(2桁)を取る
+                strdecChannel4 = decChannel4.ToString("F2")
+            Else
+                strdecChannel4 = ""
+            End If
+
+            'Channel5
+            'アナログ入力が不使用かどうか確認
+            If strStatusChannel5 <> "0000" Then
+                '16進数
+                strRevertData5 = strDataFilterTemp.Substring(164, 16)
+                '10進数に変更
+                decChannel5 = Math.Round(Convert.ToInt32(strRevertData5, 16) * 0.0001, 2)
+                '小数点(2桁)を取る
+                strdecChannel5 = decChannel5.ToString("F2")
+            Else
+                strdecChannel5 = ""
+            End If
+
+            'Channel6
+            'アナログ入力が不使用かどうか確認
+            If strStatusChannel6 <> "0000" Then
+                '16進数
+                strRevertData6 = strDataFilterTemp.Substring(200, 16)
+                '10進数に変更
+                decChannel6 = Math.Round(Convert.ToInt32(strRevertData6, 16) * 0.0001, 2)
+                '小数点(2桁)を取る
+                strdecChannel6 = decChannel6.ToString("F2")
+            Else
+                strdecChannel6 = ""
+            End If
+
+            'Channel7
+            'アナログ入力が不使用かどうか確認
+            If strStatusChannel7 <> "0000" Then
+                '16進数
+                strRevertData7 = strDataFilterTemp.Substring(236, 16)
+                '10進数に変更
+                decChannel7 = Math.Round(Convert.ToInt32(strRevertData7, 16) * 0.0001, 2)
+                '小数点(2桁)を取る
+                strdecChannel7 = decChannel7.ToString("F2")
+            Else
+                strdecChannel7 = ""
+            End If
+
+            'Channel8
+            'アナログ入力が不使用かどうか確認
+            If strStatusChannel8 <> "0000" Then
+                '16進数
+                strRevertData8 = strDataFilterTemp.Substring(272, 16)
+                '10進数に変更
+                decChannel8 = Math.Round(Convert.ToInt32(strRevertData8, 16) * 0.0001, 2)
+                '小数点(2桁)を取る
+                strdecChannel8 = decChannel8.ToString("F2")
+            Else
+                strdecChannel8 = ""
+            End If
         End If
 
         '時間の時刻と電流瞬時値のデータを組み合わせる
@@ -606,32 +620,30 @@ Public Class clsThreadProcess
     Private Sub subCreateAndWriteCSV(ByVal strFilePathCSV As String, ByVal strDataLine As String)
         Dim strFilePathCSVTemp As String = strFilePathCSV
         Dim strDataLineTemp As String = strDataLine
-        'CSVファイルを作成
-        Using fsCreateCSV As FileStream = File.Create(strFilePathCSVTemp)
-        End Using
-        'CSVファイルにデータを書き込む
-        If File.Exists(strFilePathCSVTemp) Then
-            Dim writerDataCSV As StreamWriter = Nothing
+        Try
+            'CSVファイルにデータを書き込む
             'Encoding: SHIFT-JIS
-            writerDataCSV = New StreamWriter(strFilePathCSVTemp, True, System.Text.Encoding.GetEncoding("Shift-JIS"))
-            writerDataCSV.WriteLine(strDataLineTemp)
-            If writerDataCSV IsNot Nothing Then
-                'リソースを解放する
-                writerDataCSV.Dispose()
-            End If
-        End If
+            Using writerDataCSV As New StreamWriter(strFilePathCSVTemp, True, System.Text.Encoding.GetEncoding("Shift-JIS"))
+                writerDataCSV.WriteLine(strDataLineTemp)
+            End Using
+        Catch ex As Exception
+            ' エラーメッセージを表示する
+            Console.WriteLine("{0}ファイルにデータを書き込む際にエラーが発生しました。エラー: {1}", strDataLineTemp, ex.Message)
+        End Try
     End Sub
 #End Region
 
 #Region "関数_CTCファイルを作成"
-    Private Function subCreateFileCTC(strFilePathCTC As String) As Boolean
+    Private Sub subCreateFileCTC(strFilePathCTC As String)
         Dim strFilePathCTCTemp As String = strFilePathCTC
+        Dim fsCreateCTC As FileStream = Nothing
         'CTCファイルを作成
-        Using fsCreateCTC As FileStream = File.Create(strFilePathCTCTemp)
-            Return True
-        End Using
-        Return False
-    End Function
+        fsCreateCTC = File.Create(strFilePathCTCTemp)
+        'リソースを解放する
+        If fsCreateCTC IsNot Nothing Then
+            fsCreateCTC.Dispose()
+        End If
+    End Sub
 #End Region
 
 #Region "関数_送信データ生成_レジスタ数が126以上で指定されていたら通信を2回に分ける"

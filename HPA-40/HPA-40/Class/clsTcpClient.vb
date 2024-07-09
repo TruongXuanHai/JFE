@@ -2,13 +2,12 @@
 ' clsTcpClient.vb
 ' TCPクライアント処理
 '
-'CORYRIGHT(C) 2024 HAKARU PLUS CORPORATION
+'CORYRIGHT(C) 2023 HAKARU PLUS CORPORATION
 '
 ' 修正履歴
-' 2024/06/17 チュオンスアンハイ
+' 2023/12/18 チュオンスアンハイ
 
 Imports HPA_40.clsAllVariable
-Imports System.Threading
 
 Public Class clsTcpClient
 
@@ -98,44 +97,20 @@ Public Class clsTcpClient
     'Parameters:
     '  None
     'Returns:
-    '  Boolean：True
+    '  Boolean：True→成功、False→失敗
     Public Function mTcpRcv() As Boolean
-        Dim blnrslt As Boolean = True
-        While blByteDataRcvIsAllZeros(gbytRcvData)
+        Dim blnRslt As Boolean = True
+        Try
             gbytRcvData = funcTcpRcv()
-        End While
+        Catch ex As Exception
+            '受信データフラグを変更する
+            'gintRcvStat = RcvStat.RCV_ERR
+            blnRslt = False
+            Return blnRslt
+        End Try
+
         Return blnRslt
     End Function
-
-    'Public Function mTcpRcv() As Boolean
-    '    Dim blnRslt As Boolean = True
-    '    Try
-    '        gbytRcvData = funcTcpRcv()
-    '    Catch ex As Exception
-    '        '受信データフラグを変更する
-    '        'gintRcvStat = RcvStat.RCV_ERR
-    '        Console.WriteLine("Loi day ne ae: ", ex.Message)
-    '        blnRslt = False
-    '        Return blnRslt
-    '    End Try
-    '    Return blnRslt
-    'End Function
-
-
-    'サーバ側へデータを送信する(他クラスとの窓口)
-    'Parameters:
-    '  None
-    'Returns:
-    '  Boolean：True→rcvData <> 0、False→失敗 = 0
-    Private Function blByteDataRcvIsAllZeros(rcvData As Byte()) As Boolean
-        For Each byteRcvData As Byte In rcvData
-            If byteRcvData <> 0 Then
-                Return False
-            End If
-        Next
-        Return True
-    End Function
-
 #End Region
 #End Region
 

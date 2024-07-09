@@ -17,7 +17,7 @@ Public Class clsThread3
         While Not gblStopFlagGateway
             If Not gblStopTempFlagGateway Then
                 If (gblCommStartThr3Flag = True And gblCommEndThr3Flag = False) Then
-                    Thread.Sleep(500)
+                    Thread.Sleep(100)
                     gintDbgCount3GW += 1
                     Console.WriteLine("Count in Thread3: {0}", gintDbgCount3GW)
                     Console.WriteLine("Thread3の時間データ: {0}", dtTimeTaking)

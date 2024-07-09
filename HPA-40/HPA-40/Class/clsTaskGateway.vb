@@ -75,7 +75,7 @@ Public Class clsTaskGateway
 #End Region
 
 #Region "関数_Task1を実行"
-    Public Sub subRunTaskGateway()
+    Private Sub subRunTaskGateway()
         If Not gblthreadsInitialized Then
             'Threadsを作成
             thread1 = New Thread(Sub() clsThread1.subThread1Processing())
@@ -142,7 +142,7 @@ Public Class clsTaskGateway
 #End Region
 
 #Region "関数_すべてのThreadが開始するために、フラグを設定"
-    Public Sub subFlagSettingForStart()
+    Private Sub subFlagSettingForStart()
         '通信開始フラグをTrueにする
         gblCommStartThr1Flag = True
         gblCommStartThr2Flag = True

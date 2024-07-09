@@ -99,9 +99,9 @@ Public Class clsGetParameter
         gw1.IPAddress = gateways(0).IPAddress
         gw1.UnitNumber = gateways(0).UnitNumber
 
-        'gw2.GWName = gateways(1).GWName
-        'gw2.IPAddress = gateways(1).IPAddress
-        'gw2.UnitNumber = gateways(1).UnitNumber
+        gw2.GWName = gateways(1).GWName
+        gw2.IPAddress = gateways(1).IPAddress
+        gw2.UnitNumber = gateways(1).UnitNumber
 
         'gw3.GWName = gateways(2).GWName
         'gw3.IPAddress = gateways(2).IPAddress
@@ -133,14 +133,14 @@ Public Class clsGetParameter
             arrModAddOfGW1(indexUnit) = modbusAddTemp
         Next
 
-        'ReDim arrLoRaAddOfGW2(gateways(1).UnitNumber - 1)
-        'ReDim arrModAddOfGW2(gateways(1).UnitNumber - 1)
-        'For indexUnit As Integer = 0 To gateways(1).UnitNumber - 1
-        '    loRaAddTemp = gateways(1).Units(indexUnit).LoRaAddress
-        '    modbusAddTemp = gateways(1).Units(indexUnit).RS485Address
-        '    arrLoRaAddOfGW2(indexUnit) = loRaAddTemp
-        '    arrModAddOfGW2(indexUnit) = modbusAddTemp
-        'Next
+        ReDim arrLoRaAddOfGW2(gateways(1).UnitNumber - 1)
+        ReDim arrModAddOfGW2(gateways(1).UnitNumber - 1)
+        For indexUnit As Integer = 0 To gateways(1).UnitNumber - 1
+            loRaAddTemp = gateways(1).Units(indexUnit).LoRaAddress
+            modbusAddTemp = gateways(1).Units(indexUnit).RS485Address
+            arrLoRaAddOfGW2(indexUnit) = loRaAddTemp
+            arrModAddOfGW2(indexUnit) = modbusAddTemp
+        Next
 
         'ReDim arrLoRaAddOfGW3(gateways(2).UnitNumber - 1)
         'ReDim arrModAddOfGW3(gateways(2).UnitNumber - 1)

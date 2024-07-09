@@ -17,7 +17,7 @@ Public Class clsThread8
         While Not gblStopFlagGateway
             If Not gblStopTempFlagGateway Then
                 If (gblCommStartThr8Flag = True And gblCommEndThr8Flag = False) Then
-                    Thread.Sleep(500)
+                    Thread.Sleep(100)
                     gintDbgCount8GW += 1
                     Console.WriteLine("Count in Thread8: {0}", gintDbgCount8GW)
                     Console.WriteLine("Thread8の時間データ: {0}", dtTimeTaking)

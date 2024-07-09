@@ -17,7 +17,7 @@ Public Class clsThread5
         While Not gblStopFlagGateway
             If Not gblStopTempFlagGateway Then
                 If (gblCommStartThr5Flag = True And gblCommEndThr5Flag = False) Then
-                    Thread.Sleep(500)
+                    Thread.Sleep(100)
                     gintDbgCount5GW += 1
                     Console.WriteLine("Count in Thread5: {0}", gintDbgCount5GW)
                     Console.WriteLine("Thread5の時間データ: {0}", dtTimeTaking)
